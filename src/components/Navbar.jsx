@@ -3,6 +3,9 @@ import { Link, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Moon, Sun, Heart } from "lucide-react";
 
+// ✅ Import logo correctly from src/assets
+import ytsLogo from "../assets/yts-logo.png";
+
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [darkMode, setDarkMode] = useState(
@@ -35,8 +38,20 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-6">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <Link to="/" className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-            YTS Chitwan
+          <Link to="/" className="flex items-center">
+            <img
+              src={ytsLogo} // ✅ Using imported image
+              alt="Youth Thinkers' Society Chitwan"
+              className="h-10 w-auto mr-3"
+            />
+            <div className="flex flex-col">
+              <span className="text-lg font-bold text-blue-600 dark:text-blue-400 leading-tight">
+                YTS Chitwan
+              </span>
+              <span className="text-xs text-gray-500 dark:text-gray-400 leading-tight">
+                Youth Thinkers' Society
+              </span>
+            </div>
           </Link>
 
           {/* Desktop Menu */}
@@ -73,7 +88,11 @@ export default function Navbar() {
               onClick={toggleDarkMode}
               className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
             >
-              {darkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+              {darkMode ? (
+                <Sun className="w-5 h-5" />
+              ) : (
+                <Moon className="w-5 h-5" />
+              )}
             </button>
           </div>
 
@@ -115,7 +134,7 @@ export default function Navbar() {
                 {link.name}
               </Link>
             ))}
-            
+
             {/* Mobile Donate Button */}
             <Link
               to="/donate"
