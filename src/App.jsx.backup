@@ -1,0 +1,32 @@
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
+
+// Update these import paths to match your actual file structure
+import Home from "./pages/Home"; // or './components/Home'
+import About from "./pages/About"; // or './components/About'
+import Events from "./pages/Events"; // or './components/Events'
+import Team from "./pages/Team"; // or './components/Team'
+import Contact from "./pages/Contact"; // or './components/Contact'
+import Dashboard from "./components/Dashboard"; // or './components/Dashboard'
+
+function App() {
+  return (
+    <Router>
+      <div className="min-h-screen bg-white">
+        <Navbar />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/events" element={<Events />} />
+          <Route path="/team" element={<Team />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+        </Routes>
+        <Footer />
+      </div>
+    </Router>
+  );
+}
+
+export default App;

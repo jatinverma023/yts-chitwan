@@ -50,7 +50,7 @@ export default function About() {
   ];
 
   const achievements = [
-    "Successfully organized 8 editions of Chitvan Model United Nations",
+    "Successfully organized 8 editions of Chitwan Model United Nations",
     "Trained over 500 young leaders across Nepal",
     "Established partnerships with 25+ national and international organizations",
     "Recognized as 'Outstanding Youth Organization' by Nepal Youth Council",
@@ -230,63 +230,7 @@ export default function About() {
         </div>
       </section>
 
-      {/* Support Our Mission Section - NEW */}
-      <section className="py-16 px-6 bg-blue-50 dark:bg-blue-900">
-        <div className="max-w-4xl mx-auto text-center">
-          <Reveal>
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-800 dark:text-gray-100 mb-4">
-              Help Us Continue This Impact
-            </h2>
-          </Reveal>
-          <Reveal delay={0.2}>
-            <p className="text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-2xl mx-auto">
-              Your donation directly supports our programs that have empowered
-              500+ youth leaders across Nepal. Every contribution creates
-              lasting change in communities.
-            </p>
-          </Reveal>
-
-          <Reveal delay={0.3}>
-            <div className="grid md:grid-cols-3 gap-6 mb-8">
-              <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-md">
-                <div className="text-2xl font-bold text-blue-600 dark:text-blue-400 mb-2">
-                  ₹2,500
-                </div>
-                <div className="text-gray-600 dark:text-gray-300">
-                  One leadership workshop participant
-                </div>
-              </div>
-              <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-md">
-                <div className="text-2xl font-bold text-green-600 dark:text-green-400 mb-2">
-                  ₹5,000
-                </div>
-                <div className="text-gray-600 dark:text-gray-300">
-                  Complete CMUN experience
-                </div>
-              </div>
-              <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-md">
-                <div className="text-2xl font-bold text-purple-600 dark:text-purple-400 mb-2">
-                  ₹10,000
-                </div>
-                <div className="text-gray-600 dark:text-gray-300">
-                  Community outreach program
-                </div>
-              </div>
-            </div>
-          </Reveal>
-
-          <Reveal delay={0.4}>
-            <Link
-              to="/donate"
-              className="inline-flex items-center bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white px-8 py-4 rounded-xl font-semibold shadow-lg transition-all duration-300 group"
-            >
-              <Heart className="w-5 h-5 mr-2" />
-              Support Our Mission
-              <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
-            </Link>
-          </Reveal>
-        </div>
-      </section>
+      {/* REMOVED: Support Our Mission Section */}
 
       {/* Call to Action */}
       <section className="py-16 px-6 bg-gradient-to-r from-blue-600 to-purple-700">

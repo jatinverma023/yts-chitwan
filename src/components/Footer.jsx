@@ -1,6 +1,13 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import { Facebook, Instagram, Twitter, Heart, Mail, Phone, MapPin } from "lucide-react";
+import {
+  Facebook,
+  Instagram,
+  Twitter,
+  Mail,
+  Phone,
+  MapPin,
+} from "lucide-react";
 
 export default function Footer() {
   const socials = [
@@ -18,26 +25,7 @@ export default function Footer() {
 
   return (
     <footer className="bg-gray-900 text-white">
-      {/* Donation CTA Section */}
-      <div className="bg-gradient-to-r from-green-600 to-blue-600 py-12">
-        <div className="max-w-6xl mx-auto px-6 text-center">
-          <h3 className="text-2xl md:text-3xl font-bold mb-4">
-            Support Our Mission
-          </h3>
-          <p className="text-lg text-blue-100 mb-6 max-w-2xl mx-auto">
-            Your contribution helps empower Nepal's youth through leadership programs and impactful events.
-          </p>
-          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-            <Link 
-              to="/donate"
-              className="inline-flex items-center bg-white text-blue-600 px-8 py-3 rounded-full font-semibold shadow-lg hover:bg-gray-100 transition-all duration-300"
-            >
-              <Heart className="w-5 h-5 mr-2 text-red-500" />
-              Support Our Mission
-            </Link>
-          </motion.div>
-        </div>
-      </div>
+      {/* REMOVED: Donation CTA Section */}
 
       {/* Main Footer Content */}
       <div className="py-12 px-6">
@@ -45,12 +33,16 @@ export default function Footer() {
           <div className="grid md:grid-cols-4 gap-8">
             {/* Organization Info */}
             <div className="md:col-span-2">
-              <Link to="/" className="text-2xl font-bold text-blue-400 mb-4 block">
+              <Link
+                to="/"
+                className="text-2xl font-bold text-blue-400 mb-4 block"
+              >
                 YTS Chitwan
               </Link>
               <p className="text-gray-300 mb-6 leading-relaxed">
-                Empowering Nepal's youth through leadership development, innovation, and impactful events. 
-                Join us in creating positive change across communities.
+                Empowering Nepal's youth through leadership development,
+                innovation, and impactful events. Join us in creating positive
+                change across communities.
               </p>
               <div className="space-y-2">
                 <div className="flex items-center text-gray-300">
@@ -70,11 +62,13 @@ export default function Footer() {
 
             {/* Quick Links */}
             <div>
-              <h4 className="text-lg font-semibold mb-4 text-blue-400">Quick Links</h4>
+              <h4 className="text-lg font-semibold mb-4 text-blue-400">
+                Quick Links
+              </h4>
               <ul className="space-y-2">
                 {quickLinks.map((link) => (
                   <li key={link.name}>
-                    <Link 
+                    <Link
                       to={link.path}
                       className="text-gray-300 hover:text-blue-400 transition-colors"
                     >
@@ -87,7 +81,9 @@ export default function Footer() {
 
             {/* Connect */}
             <div>
-              <h4 className="text-lg font-semibold mb-4 text-blue-400">Connect With Us</h4>
+              <h4 className="text-lg font-semibold mb-4 text-blue-400">
+                Connect With Us
+              </h4>
               <div className="flex space-x-4 mb-4">
                 {socials.map((social, index) => (
                   <motion.a
@@ -103,7 +99,8 @@ export default function Footer() {
                 ))}
               </div>
               <p className="text-gray-400 text-sm">
-                Follow us for updates on events, opportunities, and impact stories.
+                Follow us for updates on events, opportunities, and impact
+                stories.
               </p>
             </div>
           </div>
@@ -114,11 +111,25 @@ export default function Footer() {
               © 2025 Youth Thinkers' Society Chitwan. All rights reserved.
             </p>
             <div className="flex space-x-6 mt-4 md:mt-0">
-              <Link to="/privacy" className="text-gray-400 hover:text-blue-400 text-sm transition-colors">
+              <Link
+                to="/privacy"
+                className="text-gray-400 hover:text-blue-400 text-sm transition-colors"
+              >
                 Privacy Policy
               </Link>
-              <Link to="/terms" className="text-gray-400 hover:text-blue-400 text-sm transition-colors">
+              <Link
+                to="/terms"
+                className="text-gray-400 hover:text-blue-400 text-sm transition-colors"
+              >
                 Terms of Service
+              </Link>
+              {/* Secret admin access */}
+              <Link
+                to="/admin/login"
+                className="text-gray-400 hover:text-blue-400 text-sm transition-colors"
+                title="Admin Access"
+              >
+                •
               </Link>
             </div>
           </div>
