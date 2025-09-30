@@ -10,8 +10,8 @@ import Team from "./pages/Team";
 import Contact from "./pages/Contact";
 
 // Admin pages (NEW structure - pages/admin/)
-import AdminLogin from "./pages/admin/AdminLogin";
-import Dashboard from "./pages/admin/Dashboard";
+import AdminLogin from "./pages/admin/AdminLogin.jsx";
+import Dashboard from "./pages/admin/Dashboard.jsx";
 
 function App() {
   return (
