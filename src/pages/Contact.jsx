@@ -27,6 +27,9 @@ import {
   Loader,
 } from "lucide-react";
 
+// Get API URL from environment variable
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:4000/api";
+
 export default function Contact() {
   const [formData, setFormData] = useState({
     name: "",
@@ -73,7 +76,8 @@ export default function Contact() {
     }
 
     try {
-      const response = await fetch("http://localhost:4000/api/contact", {
+      // Use environment variable for API URL
+      const response = await fetch(`${API_URL}/contact`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
