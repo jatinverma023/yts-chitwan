@@ -1,44 +1,67 @@
-const express = require('express');
-const Contact = require('../models/Contact');
-const router = express.Router();
+const { DataTypes } = require('sequelize');
+const { sequelize } = require('../config/database');
 
-// Submit contact form
-router.post('/', async (req, res) => {
-  try {
-    console.log('POST /api/contact received:', req.body); // Add this line for debugging
-    
-    const { name, email, subject, message } = req.body;
-    
-    // Basic validation
-    if (!name || !email || !subject || !message) {
-      return res.status(400).json({ message: 'All fields are required' });
+const Contact = sequelize.define('Contact', {
+  id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true
+  },
+  name: {
+    type: DataTypes.STRING(100),
+    allowNull: false,
+    validate: {
+      notEmpty: true,
+      len: [2, 100]
     }
-
-    const contact = await Contact.create({
-      name,
-      email,
-      subject,
-      message
-    });
-
-    console.log('Contact created:', contact); // Add this line for debugging
-
-    res.status(201).json({
-      message: 'Message sent successfully',
-      contact: {
-        id: contact.id,
-        name: contact.name,
-        email: contact.email,
-        subject: contact.subject,
-        message: contact.message,
-        status: contact.status,
-        createdAt: contact.createdAt
-      }
-    });
-  } catch (error) {
-    console.error('Contact route error:', error); // Add this line for debugging
-    res.status(500).json({ message: 'Server error', error: error.message });
+  },
+  email: {
+    type: DataTypes.STRING(100),
+    allowNull: false,
+    validate: {
+      isEmail: true,
+      notEmpty: true
+    }
+  },
+  phone: {
+    type: DataTypes.STRING(20),
+    allowNull: true,
+    defaultValue: null
+  },
+  subject: {
+    type: DataTypes.STRING(200),
+    allowNull: false,
+    validate: {
+      notEmpty: true,
+      len: [3, 200]
+    }
+  },
+  message: {
+    type: DataTypes.TEXT,
+    allowNull: false,
+    validate: {
+      notEmpty: true,
+      len: [10, 5000]
+    }
+  },
+  status: {
+    type: DataTypes.ENUM('pending', 'read', 'replied'),
+    defaultValue: 'pending'
   }
+}, {
+  tableName: 'contacts',
+  timestamps: true,
+  indexes: [
+    {
+      fields: ['email']
+    },
+    {
+      fields: ['status']
+    },
+    {
+      fields: ['createdAt']
+    }
+  ]
 });
 
-module.exports = router;
+module.exports = Contact;

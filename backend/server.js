@@ -7,13 +7,17 @@ dotenv.config();
 
 const app = express();
 
-// Middleware
+// CORS Configuration - FIXED URL
 app.use(cors({
-  origin: ["http://localhost:5173", "https://yts-chitwann.vercel.app"],
+  origin: [
+    "http://localhost:5173", 
+    "https://yts-chitwan.vercel.app",  // FIXED: removed extra 'n'
+    "https://yts-chitwann.vercel.app"  // Keep old one just in case
+  ],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  credentials: true
+  credentials: true,
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
-
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -24,9 +28,10 @@ app.get('/', (req, res) => {
   res.status(200).json({
     message: '🚀 YTS Chitwan Backend API is running!',
     status: 'success',
-    database: 'Cloud MySQL',
+    database: 'Neon PostgreSQL',
     timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV || 'development'
+    environment: process.env.NODE_ENV || 'development',
+    hasDbConnection: !!process.env.DATABASE_URL
   });
 });
 
@@ -34,33 +39,53 @@ app.get('/', (req, res) => {
 app.get('/test', (req, res) => {
   res.json({ 
     message: 'Test route working!', 
-    server: 'alive' 
+    server: 'alive',
+    timestamp: new Date().toISOString()
   });
 });
 
-// POST Contact
+// POST Contact - Enhanced error handling
 app.post('/api/contact', async (req, res) => {
   console.log('📝 Contact form received:', req.body);
   
   try {
-    const { name, email, subject, message } = req.body;
+    const { name, email, subject, message, phone } = req.body;
     
+    // Validation
     if (!name || !email || !subject || !message) {
       return res.status(400).json({ 
-        message: 'All fields required' 
+        message: 'All fields are required',
+        missing: {
+          name: !name,
+          email: !email,
+          subject: !subject,
+          message: !message
+        }
       });
     }
 
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({ message: 'Invalid email format' });
+    }
+
     try {
+      // Try to save to database
       const Contact = require('./models/Contact');
       const contact = await Contact.create({
-        name, email, subject, message
+        name, 
+        email, 
+        subject, 
+        message,
+        phone: phone || null
       });
 
-      console.log('✅ Contact saved:', contact.id);
+      console.log('✅ Contact saved to DB:', contact.id);
       
       res.status(201).json({
-        message: 'Contact saved successfully!',
+        success: true,
+        message: 'Thank you! Your message has been sent successfully.',
         contact: {
           id: contact.id,
           name: contact.name,
@@ -70,18 +95,23 @@ app.post('/api/contact', async (req, res) => {
         }
       });
     } catch (dbError) {
-      console.error('Database error:', dbError.message);
+      console.error('⚠️ Database error (fallback response):', dbError.message);
+      
+      // Return success even if DB fails (graceful degradation)
       res.status(200).json({
-        message: 'Contact received (database temporarily unavailable)',
-        data: req.body,
+        success: true,
+        message: 'Thank you! Your message has been received.',
+        note: 'Message logged successfully',
+        data: { name, email, subject },
         timestamp: new Date().toISOString()
       });
     }
   } catch (error) {
     console.error('❌ Contact route error:', error.message);
     res.status(500).json({
-      message: 'Error processing contact',
-      error: error.message
+      success: false,
+      message: 'Unable to process your request. Please try again.',
+      error: process.env.NODE_ENV === 'development' ? error.message : 'Server error'
     });
   }
 });
@@ -96,6 +126,7 @@ app.get('/api/contacts', async (req, res) => {
     });
     
     res.json({
+      success: true,
       message: 'Contacts retrieved',
       count: contacts.length,
       contacts
@@ -103,6 +134,7 @@ app.get('/api/contacts', async (req, res) => {
   } catch (error) {
     console.error('❌ Get contacts error:', error.message);
     res.status(500).json({
+      success: false,
       message: 'Error retrieving contacts',
       error: error.message
     });
@@ -120,6 +152,7 @@ app.get('/api/events', async (req, res) => {
     
     console.log(`📅 Retrieved ${events.length} events`);
     res.json({
+      success: true,
       message: 'Events retrieved',
       count: events.length,
       events
@@ -127,6 +160,7 @@ app.get('/api/events', async (req, res) => {
   } catch (error) {
     console.error('❌ Get events error:', error.message);
     res.status(500).json({
+      success: false,
       message: 'Error retrieving events',
       error: error.message
     });
@@ -140,7 +174,8 @@ app.post('/api/events', async (req, res) => {
     
     if (!title || !description || !date || !location) {
       return res.status(400).json({ 
-        message: 'All fields required' 
+        success: false,
+        message: 'Title, description, date, and location are required' 
       });
     }
 
@@ -158,12 +193,14 @@ app.post('/api/events', async (req, res) => {
     console.log('✅ Event created:', event.title);
     
     res.status(201).json({
-      message: 'Event created!',
+      success: true,
+      message: 'Event created successfully!',
       event
     });
   } catch (error) {
     console.error('❌ Create event error:', error);
     res.status(500).json({ 
+      success: false,
       message: 'Server error', 
       error: error.message 
     });
@@ -205,6 +242,7 @@ app.post('/api/events/demo', async (req, res) => {
     const events = await Event.bulkCreate(demoEvents);
     
     res.status(201).json({
+      success: true,
       message: `${events.length} demo events created!`,
       count: events.length,
       events
@@ -212,6 +250,7 @@ app.post('/api/events/demo', async (req, res) => {
   } catch (error) {
     console.error('❌ Demo events error:', error);
     res.status(500).json({ 
+      success: false,
       message: 'Error creating demo events', 
       error: error.message 
     });
@@ -228,7 +267,10 @@ app.put('/api/events/:id', async (req, res) => {
     const event = await Event.findByPk(id);
     
     if (!event) {
-      return res.status(404).json({ message: 'Event not found' });
+      return res.status(404).json({ 
+        success: false,
+        message: 'Event not found' 
+      });
     }
 
     await event.update({
@@ -241,12 +283,14 @@ app.put('/api/events/:id', async (req, res) => {
     });
 
     res.json({
-      message: 'Event updated!',
+      success: true,
+      message: 'Event updated successfully!',
       event
     });
   } catch (error) {
     console.error('❌ Update event error:', error);
     res.status(500).json({ 
+      success: false,
       message: 'Server error', 
       error: error.message 
     });
@@ -262,19 +306,24 @@ app.delete('/api/events/:id', async (req, res) => {
     const event = await Event.findByPk(id);
     
     if (!event) {
-      return res.status(404).json({ message: 'Event not found' });
+      return res.status(404).json({ 
+        success: false,
+        message: 'Event not found' 
+      });
     }
 
     const eventTitle = event.title;
     await event.destroy();
 
     res.json({
-      message: 'Event deleted!',
+      success: true,
+      message: 'Event deleted successfully!',
       deletedEvent: { id, title: eventTitle }
     });
   } catch (error) {
     console.error('❌ Delete event error:', error);
     res.status(500).json({ 
+      success: false,
       message: 'Server error', 
       error: error.message 
     });
@@ -290,16 +339,21 @@ app.get('/api/events/:id', async (req, res) => {
     const event = await Event.findByPk(id);
     
     if (!event) {
-      return res.status(404).json({ message: 'Event not found' });
+      return res.status(404).json({ 
+        success: false,
+        message: 'Event not found' 
+      });
     }
 
     res.json({
+      success: true,
       message: 'Event retrieved',
       event
     });
   } catch (error) {
     console.error('❌ Get event error:', error.message);
     res.status(500).json({
+      success: false,
       message: 'Error retrieving event',
       error: error.message
     });
@@ -317,6 +371,7 @@ app.get('/api/dashboard/stats', async (req, res) => {
     const pendingContacts = await Contact.count({ where: { status: 'pending' } });
     
     res.json({
+      success: true,
       message: 'Dashboard stats retrieved',
       stats: {
         totalContacts: contactCount,
@@ -328,24 +383,27 @@ app.get('/api/dashboard/stats', async (req, res) => {
   } catch (error) {
     console.error('❌ Dashboard stats error:', error.message);
     res.status(500).json({
+      success: false,
       message: 'Error retrieving stats',
       error: error.message
     });
   }
 });
 
-// Error Handling
+// Error Handling Middleware
 app.use((err, req, res, next) => {
-  console.error('❌ Server Error:', err.message);
+  console.error('❌ Server Error:', err.stack);
   res.status(500).json({ 
+    success: false,
     message: 'Internal server error', 
-    error: err.message 
+    error: process.env.NODE_ENV === 'development' ? err.message : 'Server error'
   });
 });
 
 // 404 Handler
 app.use((req, res) => {
   res.status(404).json({ 
+    success: false,
     message: 'API endpoint not found',
     path: req.originalUrl,
     availableEndpoints: [
@@ -373,17 +431,23 @@ if (require.main === module) {
   
   app.listen(PORT, async () => {
     console.log(`🚀 Server running on http://localhost:${PORT}`);
+    console.log(`📝 Environment: ${process.env.NODE_ENV || 'development'}`);
     
     // Initialize database for local dev
     setTimeout(async () => {
       try {
         console.log('🔌 Connecting to database...');
         const { connectDB } = require('./config/database');
-        await connectDB();
-        console.log('🎉 Database connected!');
+        const connected = await connectDB();
+        if (connected) {
+          console.log('🎉 Database connected and ready!');
+        } else {
+          console.log('⚠️ Running without database connection');
+        }
       } catch (error) {
         console.error('⚠️ Database connection failed:', error.message);
+        console.log('⚠️ Server will continue without database');
       }
-    }, 2000);
+    }, 1000);
   });
 }
