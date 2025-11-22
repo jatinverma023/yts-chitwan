@@ -1,43 +1,42 @@
-const { DataTypes } = require('sequelize');
-const { sequelize } = require('../config/database');
+const mongoose = require('mongoose');
 
-const TeamMember = sequelize.define('TeamMember', {
-  id: {
-    type: DataTypes.INTEGER,
-    primaryKey: true,
-    autoIncrement: true
-  },
+const teamMemberSchema = new mongoose.Schema({
   name: {
-    type: DataTypes.STRING(100),
-    allowNull: false
+    type: String,
+    required: true,
+    maxlength: 100
   },
   position: {
-    type: DataTypes.STRING(100),
-    allowNull: false
+    type: String,
+    required: true,
+    maxlength: 100
   },
   bio: {
-    type: DataTypes.TEXT,
-    defaultValue: ''
+    type: String,
+    default: ''
   },
   image: {
-    type: DataTypes.STRING(255),
-    defaultValue: ''
+    type: String,
+    default: '',
+    maxlength: 255
   },
   email: {
-    type: DataTypes.STRING(100),
-    defaultValue: ''
+    type: String,
+    default: '',
+    maxlength: 100
   },
   social: {
-    type: DataTypes.JSON,
-    defaultValue: {}
+    type: Object,
+    default: {}
   },
   order: {
-    type: DataTypes.INTEGER,
-    defaultValue: 0
+    type: Number,
+    default: 0
   }
 }, {
-  tableName: 'team_members',
   timestamps: true
 });
+
+const TeamMember = mongoose.model('TeamMember', teamMemberSchema);
 
 module.exports = TeamMember;

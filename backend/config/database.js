@@ -1,45 +1,22 @@
-const { Sequelize } = require('sequelize');
-
-let sequelize = null;
+const mongoose = require('mongoose');
 
 const connectDB = async () => {
   try {
-    if (!process.env.DATABASE_URL) {
-      console.log('⚠️ DATABASE_URL not found');
+    if (!process.env.MONGODB_URI) {
+      console.log('⚠️ MONGODB_URI not found');
       return false;
     }
 
-    sequelize = new Sequelize(process.env.DATABASE_URL, {
-      dialect: 'postgres',
-      dialectOptions: {
-        ssl: {
-          require: true,
-          rejectUnauthorized: false
-        }
-      },
-      logging: process.env.NODE_ENV === 'development' ? console.log : false,
-      pool: {
-        max: 5,
-        min: 0,
-        acquire: 30000,
-        idle: 10000
-      }
-    });
+    await mongoose.connect(process.env.MONGODB_URI, {
+  dbName: "yts_main",   // <-- new DB name
+});
+console.log('✅ MongoDB Atlas connection established successfully (DB:', mongoose.connection.db.databaseName + ')');
 
-    await sequelize.authenticate();
-    console.log('✅ Database connection established successfully');
-    
-    // Sync models
-    await sequelize.sync({ alter: true });
-    console.log('✅ Database models synchronized');
-    
     return true;
   } catch (error) {
-    console.error('❌ Unable to connect to database:', error.message);
+    console.error('❌ Unable to connect to MongoDB Atlas:', error.message);
     return false;
   }
 };
 
-const getSequelize = () => sequelize;
-
-module.exports = { connectDB, getSequelize };
+module.exports = { connectDB };

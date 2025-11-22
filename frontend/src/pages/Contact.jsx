@@ -1,3 +1,4 @@
+// frontend/src/pages/Contact.jsx
 import Reveal from "../components/Reveal";
 import ApiService from "../services/api";
 import { Link } from "react-router-dom";
@@ -19,16 +20,12 @@ import {
   Twitter,
   Linkedin,
   Instagram,
-  User,
   HelpCircle,
   Star,
   Heart,
   AlertCircle,
   Loader,
 } from "lucide-react";
-
-// Get API URL from environment variable
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:4000/api";
 
 export default function Contact() {
   const [formData, setFormData] = useState({
@@ -48,12 +45,12 @@ export default function Contact() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Reset previous messages
+    // reset
     setSubmitMessage("");
     setSubmitError("");
     setIsLoading(true);
 
-    // Basic validation
+    // Basic client-side validation
     if (
       !formData.name.trim() ||
       !formData.email.trim() ||
@@ -75,58 +72,53 @@ export default function Contact() {
       return;
     }
 
+    // message minimum length (mirror server rule)
+    if (formData.message.trim().length < 10) {
+      setSubmitError("Message must be at least 10 characters");
+      setIsLoading(false);
+      return;
+    }
+
     try {
-      // Use environment variable for API URL
-      const response = await fetch(`${API_URL}/contact`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name: formData.name.trim(),
-          email: formData.email.trim(),
-          subject: formData.subject.trim(),
-          message: formData.message.trim(),
-          phone: formData.phone.trim(),
-          inquiryType: formData.inquiryType,
-        }),
+      const payload = {
+        name: formData.name.trim(),
+        email: formData.email.trim(),
+        phone: formData.phone.trim(),
+        subject: formData.subject.trim(),
+        message: formData.message.trim(),
+        inquiryType: formData.inquiryType,
+      };
+
+      const data = await ApiService.submitContact(payload);
+
+      setIsSubmitted(true);
+      setSubmitMessage(
+        data.message || "Thank you — we'll get back to you within 24 hours."
+      );
+
+      // reset form
+      setFormData({
+        name: "",
+        email: "",
+        phone: "",
+        subject: "",
+        message: "",
+        inquiryType: "",
       });
 
-      const data = await response.json();
-
-      if (response.ok) {
-        setIsSubmitted(true);
-        setSubmitMessage(
-          data.message ||
-            "Thank you for your message! We'll get back to you within 24 hours."
-        );
-
-        // Reset form after successful submission
-        setFormData({
-          name: "",
-          email: "",
-          phone: "",
-          subject: "",
-          message: "",
-          inquiryType: "",
-        });
-
-        // Hide success message after 5 seconds
-        setTimeout(() => {
-          setIsSubmitted(false);
-          setSubmitMessage("");
-        }, 5000);
-      } else {
-        throw new Error(
-          data.message || "Something went wrong. Please try again."
-        );
-      }
-    } catch (error) {
-      console.error("Contact form error:", error);
-      setSubmitError(
-        error.message ||
-          "Network error. Please check your connection and try again."
-      );
+      // auto-hide success
+      setTimeout(() => {
+        setIsSubmitted(false);
+        setSubmitMessage("");
+      }, 5000);
+    } catch (err) {
+      console.error("Contact form error:", err);
+      // axios error shape or generic Error
+      const message =
+        err?.response?.data?.message ||
+        err?.message ||
+        "Network error. Please try again.";
+      setSubmitError(message);
     } finally {
       setIsLoading(false);
     }
@@ -134,15 +126,8 @@ export default function Contact() {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-
-    // Clear errors when user starts typing
-    if (submitError) {
-      setSubmitError("");
-    }
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    if (submitError) setSubmitError("");
   };
 
   const contactMethods = [
@@ -234,7 +219,6 @@ export default function Contact() {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
       {/* Hero Section */}
       <section className="relative h-[70vh] flex items-center justify-center text-center bg-gradient-to-br from-green-600 via-blue-600 to-purple-700 text-white overflow-hidden">
-        {/* Background Pattern */}
         <div className="absolute inset-0 opacity-10">
           <div
             className="absolute inset-0"
@@ -244,14 +228,12 @@ export default function Contact() {
           ></div>
         </div>
 
-        {/* Animated Background Elements */}
         <div className="absolute inset-0">
           <div className="absolute top-20 left-20 w-4 h-4 bg-yellow-400 rounded-full opacity-60 animate-pulse"></div>
           <div className="absolute top-32 right-24 w-6 h-6 bg-pink-400 rounded-full opacity-40 animate-bounce"></div>
           <div className="absolute bottom-32 left-32 w-3 h-3 bg-green-400 rounded-full opacity-50 animate-pulse"></div>
         </div>
 
-        {/* Content */}
         <div className="relative z-10 px-6 max-w-4xl mx-auto">
           <Reveal>
             <div className="inline-flex items-center px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full border border-white/30 mb-6">
@@ -277,7 +259,7 @@ export default function Contact() {
               <span className="text-green-300 font-semibold">
                 join our events
               </span>
-              ,<span className="text-pink-300 font-semibold"> collaborate</span>
+              , <span className="text-pink-300 font-semibold">collaborate</span>
               , or simply learn more about our mission.
             </p>
           </Reveal>
@@ -515,7 +497,6 @@ export default function Contact() {
 
             {/* Contact Info & Team */}
             <div className="space-y-8">
-              {/* Office Info */}
               <Reveal delay={0.2}>
                 <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8">
                   <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-6 flex items-center">
@@ -592,7 +573,6 @@ export default function Contact() {
                 </div>
               </Reveal>
 
-              {/* Quick Team Contact */}
               <Reveal delay={0.4}>
                 <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8">
                   <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-6 flex items-center">

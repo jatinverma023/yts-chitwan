@@ -1,86 +1,54 @@
-const { DataTypes } = require('sequelize');
-const { getSequelize } = require('../config/database');
+const mongoose = require('mongoose');
 
-const Event = () => {
-  const sequelize = getSequelize();
-  
-  if (!sequelize) {
-    throw new Error('Database not initialized');
+const eventSchema = new mongoose.Schema({
+  title: {
+    type: String,
+    required: true,
+    minlength: 3,
+    maxlength: 255
+  },
+  description: {
+    type: String,
+    required: true
+  },
+  date: {
+    type: Date,
+    required: true
+  },
+  location: {
+    type: String,
+    required: true
+  },
+  category: {
+    type: String,
+  required: false,
+  default: 'other'
+  },
+  image: {
+    type: String,
+    required: false
+  },
+  isActive: {
+    type: Boolean,
+    default: true
+  },
+  capacity: {
+    type: Number,
+    required: false
+  },
+  registeredCount: {
+    type: Number,
+    default: 0
   }
+}, {
+  timestamps: true
+});
 
-  return sequelize.define('Event', {
-    id: {
-      type: DataTypes.INTEGER,
-      primaryKey: true,
-      autoIncrement: true
-    },
-    title: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      validate: {
-        notEmpty: true,
-        len: [3, 255]
-      }
-    },
-    description: {
-      type: DataTypes.TEXT,
-      allowNull: false,
-      validate: {
-        notEmpty: true
-      }
-    },
-    date: {
-      type: DataTypes.DATE,
-      allowNull: false,
-      validate: {
-        isDate: true
-      }
-    },
-    location: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      validate: {
-        notEmpty: true
-      }
-    },
-    category: {
-      type: DataTypes.ENUM('workshop', 'seminar', 'competition', 'meetup', 'conference', 'other'),
-      defaultValue: 'workshop'
-    },
-    image: {
-      type: DataTypes.STRING,
-      allowNull: true
-    },
-    isActive: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: true,
-      field: 'is_active'
-    },
-    capacity: {
-      type: DataTypes.INTEGER,
-      allowNull: true
-    },
-    registeredCount: {
-      type: DataTypes.INTEGER,
-      defaultValue: 0,
-      field: 'registered_count'
-    }
-  }, {
-    tableName: 'events',
-    timestamps: true,
-    underscored: true,
-    indexes: [
-      {
-        fields: ['date']
-      },
-      {
-        fields: ['category']
-      },
-      {
-        fields: ['is_active']
-      }
-    ]
-  });
-};
+// Indexes
+eventSchema.index({ date: 1 });
+eventSchema.index({ category: 1 });
+eventSchema.index({ isActive: 1 });
+
+const Event = mongoose.model('Event', eventSchema);
 
 module.exports = Event;

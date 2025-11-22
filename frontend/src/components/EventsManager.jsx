@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import ApiService from "../services/api";
 import Reveal from "./Reveal";
 import {
@@ -13,13 +14,16 @@ import {
   Loader,
   CheckCircle,
   AlertCircle,
+  Users,
 } from "lucide-react";
 
 export default function EventsManager() {
+  const navigate = useNavigate();
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [registrationCounts, setRegistrationCounts] = useState({});
 
   // Form state
   const [showForm, setShowForm] = useState(false);
@@ -40,7 +44,27 @@ export default function EventsManager() {
     try {
       setLoading(true);
       const response = await ApiService.getEvents();
-      setEvents(response.events || []);
+      const eventsList = response.events || [];
+      setEvents(eventsList);
+
+      // Fetch registration counts for each event
+      for (const event of eventsList) {
+        const eventId = event._id || event.id;
+        try {
+          const regResponse = await ApiService.getEventRegistrations(eventId);
+          setRegistrationCounts((prev) => ({
+            ...prev,
+            [eventId]:
+              regResponse.count || regResponse.registrations?.length || 0,
+          }));
+        } catch (err) {
+          console.error(
+            `Failed to fetch registrations for event ${eventId}:`,
+            err
+          );
+        }
+      }
+
       setError("");
     } catch (error) {
       setError("Failed to load events");
@@ -118,6 +142,10 @@ export default function EventsManager() {
         setLoading(false);
       }
     }
+  };
+
+  const handleViewRegistrations = (eventId) => {
+    navigate(`/admin/events/${eventId}/registrations`);
   };
 
   if (loading && events.length === 0) {
@@ -348,78 +376,95 @@ export default function EventsManager() {
                       Category
                     </th>
                     <th className="px-6 py-4 text-center text-sm font-medium text-gray-500 uppercase">
+                      Registrations
+                    </th>
+                    <th className="px-6 py-4 text-center text-sm font-medium text-gray-500 uppercase">
                       Actions
                     </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
-                  {events.map((event, index) => (
-                    <Reveal key={event.id} delay={index * 0.05}>
-                      <tr className="hover:bg-gray-50 transition-colors">
-                        <td className="px-6 py-4">
-                          <div>
-                            <div className="text-sm font-medium text-gray-900">
-                              {event.title}
+                  {events.map((event, index) => {
+                    const eventId = event._id || event.id;
+                    const regCount = registrationCounts[eventId] || 0;
+
+                    return (
+                      <Reveal key={eventId} delay={index * 0.05}>
+                        <tr className="hover:bg-gray-50 transition-colors">
+                          <td className="px-6 py-4">
+                            <div>
+                              <div className="text-sm font-medium text-gray-900">
+                                {event.title}
+                              </div>
+                              <div className="text-sm text-gray-500 mt-1 line-clamp-2">
+                                {event.description}
+                              </div>
                             </div>
-                            <div className="text-sm text-gray-500 mt-1 line-clamp-2">
-                              {event.description}
+                          </td>
+                          <td className="px-6 py-4">
+                            <div className="flex items-center text-sm text-gray-600">
+                              <Calendar className="w-4 h-4 mr-2" />
+                              {new Date(event.date).toLocaleDateString()}
                             </div>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4">
-                          <div className="flex items-center text-sm text-gray-600">
-                            <Calendar className="w-4 h-4 mr-2" />
-                            {new Date(event.date).toLocaleDateString()}
-                          </div>
-                          <div className="flex items-center text-sm text-gray-500 mt-1">
-                            <Clock className="w-4 h-4 mr-2" />
-                            {new Date(event.date).toLocaleTimeString()}
-                          </div>
-                        </td>
-                        <td className="px-6 py-4">
-                          <div className="flex items-center text-sm text-gray-600">
-                            <MapPin className="w-4 h-4 mr-2" />
-                            {event.location}
-                          </div>
-                        </td>
-                        <td className="px-6 py-4">
-                          <span
-                            className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                              event.category === "workshop"
-                                ? "bg-blue-100 text-blue-800"
-                                : event.category === "seminar"
-                                ? "bg-green-100 text-green-800"
-                                : event.category === "competition"
-                                ? "bg-purple-100 text-purple-800"
-                                : "bg-orange-100 text-orange-800"
-                            }`}
-                          >
-                            {event.category}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 text-center">
-                          <div className="flex items-center justify-center space-x-2">
-                            <button
-                              onClick={() => handleEdit(event)}
-                              className="p-2 text-blue-600 hover:bg-blue-100 rounded-lg transition-colors"
-                              title="Edit event"
+                            <div className="flex items-center text-sm text-gray-500 mt-1">
+                              <Clock className="w-4 h-4 mr-2" />
+                              {new Date(event.date).toLocaleTimeString()}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4">
+                            <div className="flex items-center text-sm text-gray-600">
+                              <MapPin className="w-4 h-4 mr-2" />
+                              {event.location}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span
+                              className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                                event.category === "workshop"
+                                  ? "bg-blue-100 text-blue-800"
+                                  : event.category === "seminar"
+                                    ? "bg-green-100 text-green-800"
+                                    : event.category === "competition"
+                                      ? "bg-purple-100 text-purple-800"
+                                      : "bg-orange-100 text-orange-800"
+                              }`}
                             >
-                              <Edit className="w-4 h-4" />
-                            </button>
+                              {event.category}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 text-center">
                             <button
-                              onClick={() =>
-                                handleDelete(event.id, event.title)
-                              }
-                              className="p-2 text-red-600 hover:bg-red-100 rounded-lg transition-colors"
-                              title="Delete event"
+                              onClick={() => handleViewRegistrations(eventId)}
+                              className="inline-flex items-center px-3 py-1.5 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-colors"
                             >
-                              <Trash2 className="w-4 h-4" />
+                              <Users className="w-4 h-4 mr-1" />
+                              <span className="font-semibold">{regCount}</span>
                             </button>
-                          </div>
-                        </td>
-                      </tr>
-                    </Reveal>
-                  ))}
+                          </td>
+                          <td className="px-6 py-4 text-center">
+                            <div className="flex items-center justify-center space-x-2">
+                              <button
+                                onClick={() => handleEdit(event)}
+                                className="p-2 text-blue-600 hover:bg-blue-100 rounded-lg transition-colors"
+                                title="Edit event"
+                              >
+                                <Edit className="w-4 h-4" />
+                              </button>
+                              <button
+                                onClick={() =>
+                                  handleDelete(eventId, event.title)
+                                }
+                                className="p-2 text-red-600 hover:bg-red-100 rounded-lg transition-colors"
+                                title="Delete event"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      </Reveal>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>

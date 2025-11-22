@@ -1,89 +1,62 @@
-const { DataTypes } = require('sequelize');
-const { getSequelize } = require('../config/database');
+const mongoose = require('mongoose');
 
-const Contact = () => {
-  const sequelize = getSequelize();
-  
-  if (!sequelize) {
-    throw new Error('Database not initialized');
-  }
-
-  return sequelize.define('Contact', {
-    id: {
-      type: DataTypes.INTEGER,
-      primaryKey: true,
-      autoIncrement: true
-    },
-    name: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      validate: {
-        notEmpty: true,
-        len: [2, 255]
-      }
-    },
-    email: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      validate: {
-        isEmail: true,
-        notEmpty: true
-      }
-    },
-    phone: {
-      type: DataTypes.STRING,
-      allowNull: true
-    },
-    subject: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      validate: {
-        notEmpty: true
-      }
-    },
-    message: {
-      type: DataTypes.TEXT,
-      allowNull: false,
-      validate: {
-        notEmpty: true,
-        len: [10, 5000]
-      }
-    },
-    inquiryType: {
-      type: DataTypes.STRING,
-      allowNull: true,
-      field: 'inquiry_type'
-    },
-    status: {
-      type: DataTypes.ENUM('pending', 'read', 'replied', 'archived'),
-      defaultValue: 'pending'
-    },
-    ipAddress: {
-      type: DataTypes.STRING,
-      allowNull: true,
-      field: 'ip_address'
-    },
-    userAgent: {
-      type: DataTypes.TEXT,
-      allowNull: true,
-      field: 'user_agent'
+const contactSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: true,
+    minlength: 2,
+    maxlength: 255
+  },
+  email: {
+    type: String,
+    required: true,
+    validate: {
+      validator: function(v) {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+      },
+      message: 'Invalid email format'
     }
-  }, {
-    tableName: 'contacts',
-    timestamps: true,
-    underscored: true,
-    indexes: [
-      {
-        fields: ['email']
-      },
-      {
-        fields: ['status']
-      },
-      {
-        fields: ['created_at']
-      }
-    ]
-  });
-};
+  },
+  phone: {
+    type: String,
+    required: false
+  },
+  subject: {
+    type: String,
+    required: true
+  },
+  message: {
+    type: String,
+  required: true,
+  minlength: 2,
+  maxlength: 5000
+  },
+  inquiryType: {
+    type: String,
+    required: false
+  },
+  status: {
+    type: String,
+    enum: ['pending', 'read', 'replied', 'archived'],
+    default: 'pending'
+  },
+  ipAddress: {
+    type: String,
+    required: false
+  },
+  userAgent: {
+    type: String,
+    required: false
+  }
+}, {
+  timestamps: true
+});
+
+// Indexes
+contactSchema.index({ email: 1 });
+contactSchema.index({ status: 1 });
+contactSchema.index({ createdAt: 1 });
+
+const Contact = mongoose.model('Contact', contactSchema);
 
 module.exports = Contact;
