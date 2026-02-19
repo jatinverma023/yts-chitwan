@@ -67,18 +67,26 @@ export default function EventRegistration() {
     setError("");
 
     try {
-      // Submit registration to backend
       await ApiService.registerForEvent(id, formData);
 
       setSuccess(true);
 
-      // Redirect after 2 seconds
+      // Clear form
+      setFormData({
+        name: "",
+        email: "",
+        phone: "",
+        message: "",
+      });
+
       setTimeout(() => {
         navigate("/events");
       }, 2000);
     } catch (err) {
-      setError("Registration failed. Please try again.");
-      console.error(err);
+      console.error("Registration error:", err);
+
+      // Show real backend message
+      setError(err.message || "Registration failed. Please try again.");
     } finally {
       setSubmitting(false);
     }
