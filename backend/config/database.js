@@ -8,7 +8,7 @@ const connectDB = async () => {
     }
 
     await mongoose.connect(process.env.MONGODB_URI, {
-  dbName: "yts_main",   // <-- new DB name
+  dbName: "yts_main",   
 });
 console.log('✅ MongoDB Atlas connection established successfully (DB:', mongoose.connection.db.databaseName + ')');
 

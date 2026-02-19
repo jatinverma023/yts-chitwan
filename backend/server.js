@@ -22,7 +22,7 @@ connectDB()
 ------------------------------------------------------------ */
 
 const allowedOrigins = [
-  "http://localhost:5173",   // Vite dev server (frontend)
+  "http://localhost:5174",   // Vite dev server (frontend)
   "http://localhost:3000",   // optional: CRA dev server (if used)
 ];
 

@@ -1,44 +1,71 @@
-# YTS Chitwan - Youth Technology Society
+# Youth Thinkers' Society - Chitwan
 
-A full-stack web application for the Youth Technology Society (YTS) Chitwan chapter, built with React, Node.js, Express, and MongoDB.
+A comprehensive full-stack web application for the Youth Thinkers' Society (YTS) Chitwan chapter, empowering Nepal's youth through leadership development, innovation, and community building. Built with React, Node.js, Express, and MongoDB.
+
+## 🌟 About YTS Chitwan
+
+Youth Thinkers' Society (YTS) Chitwan is a dynamic youth organization dedicated to nurturing young Nepalese leaders. For over 8 years, we've been creating transformative experiences that develop confident leaders and drive positive social change across Nepal.
+
+### Our Mission
+
+To create a dynamic platform where young Nepalese leaders can develop essential skills, engage in meaningful dialogue, and drive positive change in their communities through innovative programs, workshops, and collaborative initiatives.
+
+### Our Vision
+
+To be Nepal's premier youth organization, recognized for developing confident, socially-conscious leaders who contribute to building a more prosperous, inclusive, and sustainable Nepal for future generations.
+
+### Core Values
+
+- **Leadership Excellence**: Cultivating confident leaders who drive positive change
+- **Innovation & Creativity**: Encouraging innovative thinking and creative solutions
+- **Social Impact**: Every program designed to create meaningful impact
+- **Inclusive Community**: Creating a space where every voice matters
 
 ## 🚀 Features
 
 ### Public Features
 
-- **Home Page**: Welcome page with society information
-- **About Page**: Information about YTS Chitwan
-- **Events Page**: Browse upcoming and past events
-- **Team Page**: Meet the team members
-- **Contact Page**: Contact form for inquiries
+- **Home Page**: Interactive landing page with impact statistics and upcoming events
+- **About Page**: Comprehensive information about YTS Chitwan's mission, vision, and achievements
+- **Events Page**: Browse and register for upcoming events including CMUN, hackathons, and workshops
+- **Team Page**: Meet the dedicated team members driving change
+- **Contact Page**: Contact form for inquiries and partnerships
 
 ### Admin Features
 
-- **Dashboard**: Overview of users, events, and contacts
-- **User Management**: View and manage user roles (admin/user)
-- **Event Management**: Create, edit, and delete events
-- **Contact Management**: View and manage contact messages
-- **Registration Management**: Handle event registrations
+- **Dashboard**: Comprehensive overview of users, events, contacts, and registrations
+- **User Management**: View and manage user roles and permissions
+- **Event Management**: Create, edit, and manage events with full CRUD operations
+- **Contact Management**: View, respond to, and manage contact messages
+- **Registration Management**: Handle event registrations and participant management
+
+## 📊 Impact Statistics
+
+- **500+ Youth Empowered** through our programs
+- **50+ Events Organized** including 8 CMUN editions
+- **8 Years Active** in youth development
+- **25+ Partner Organizations** nationwide
 
 ## 🛠️ Tech Stack
 
 ### Frontend
 
-- **React 18** - Modern React with hooks
-- **React Router** - Client-side routing
-- **Tailwind CSS** - Utility-first CSS framework
-- **Framer Motion** - Animation library
-- **Lucide React** - Icon library
-- **Vite** - Build tool and dev server
+- **React 18** - Modern React with hooks and functional components
+- **React Router** - Client-side routing for seamless navigation
+- **Tailwind CSS** - Utility-first CSS framework for responsive design
+- **Framer Motion** - Smooth animations and transitions
+- **Lucide React** - Beautiful icon library
+- **Vite** - Fast build tool and development server
+- **Axios** - HTTP client for API communication
 
 ### Backend
 
-- **Node.js** - JavaScript runtime
-- **Express.js** - Web framework
-- **MongoDB** - NoSQL database
-- **Mongoose** - MongoDB object modeling
-- **JWT** - Authentication
-- **bcryptjs** - Password hashing
+- **Node.js** - JavaScript runtime environment
+- **Express.js** - Fast, unopinionated web framework
+- **MongoDB** - NoSQL database for flexible data storage
+- **Mongoose** - Elegant MongoDB object modeling
+- **JWT** - Secure authentication tokens
+- **bcryptjs** - Password hashing for security
 - **CORS** - Cross-origin resource sharing
 
 ## 📁 Project Structure
@@ -69,8 +96,6 @@ yts-chitwan/
 │   │   ├── health.js
 │   │   └── registrations.js
 │   ├── uploads/
-│   ├── create_admin.js
-│   ├── delete_all_users.js
 │   ├── inspect_db.js
 │   ├── package.json
 │   └── server.js
@@ -126,9 +151,7 @@ yts-chitwan/
 │   ├── tsconfig.node.json
 │   └── vite.config.ts
 ├── .gitignore
-├── README.md
-├── TODO.md
-└── vercel.json
+└── README.md
 ```
 
 ## 🚀 Getting Started
@@ -136,8 +159,8 @@ yts-chitwan/
 ### Prerequisites
 
 - Node.js (v22.x recommended)
-- MongoDB (local or cloud instance)
-- npm or yarn
+- MongoDB (local or cloud instance like MongoDB Atlas)
+- npm or yarn package manager
 
 ### Installation
 
@@ -163,12 +186,13 @@ yts-chitwan/
 
 ### Environment Variables
 
-Create a `.env` file in the backend directory:
+Create a `.env` file in the backend directory with the following variables:
 
 ```env
 MONGODB_URI=mongodb://localhost:27017/yts-chitwan
-JWT_SECRET=your-super-secret-jwt-key
+JWT_SECRET=your-super-secret-jwt-key-here
 PORT=5000
+NODE_ENV=development
 ```
 
 ### Database Setup
@@ -179,69 +203,79 @@ PORT=5000
    mongod
    ```
 
-2. **Create Admin User** (optional)
-   ```bash
-   cd backend
-   node create_admin.js
-   ```
+2. **For cloud MongoDB** (recommended for production)
+   - Create a MongoDB Atlas account
+   - Set up a cluster and get your connection string
+   - Update `MONGODB_URI` in your `.env` file
 
 ### Running the Application
 
-1. **Start Backend**
+1. **Start the Backend Server**
 
    ```bash
    cd backend
    npm run dev
    ```
 
-2. **Start Frontend** (in a new terminal)
+2. **Start the Frontend Development Server** (in a new terminal)
 
    ```bash
    cd frontend
    npm run dev
    ```
 
-3. **Access the application**
-   - Frontend: http://localhost:5174
-   - Backend API: http://localhost:5000
+3. **Access the Application**
+   - **Frontend**: http://localhost:5174
+   - **Backend API**: http://localhost:5000
+   - **Admin Panel**: http://localhost:5174/admin/login
 
 ## 📡 API Endpoints
 
 ### Authentication
 
-- `POST /api/auth/login` - User login
 - `POST /api/auth/register` - User registration
+- `POST /api/auth/login` - User login
+- `GET /api/auth/me` - Get current user info (authenticated)
+- `GET /api/auth/users` - Get all users (admin only)
 
 ### Events
 
-- `GET /api/events` - Get all events
-- `POST /api/events` - Create event (admin)
+- `GET /api/events` - Get all active events
+- `GET /api/events/:id` - Get single event details
+- `POST /api/events` - Create new event (admin)
 - `PUT /api/events/:id` - Update event (admin)
 - `DELETE /api/events/:id` - Delete event (admin)
 
 ### Contacts
 
-- `GET /api/contact` - Get all contacts (admin)
-- `POST /api/contact` - Submit contact form
-- `PUT /api/contact/:id/status` - Update contact status (admin)
-- `DELETE /api/contact/:id` - Delete contact (admin)
+- `GET /api/contacts` - Get all contacts with pagination (admin)
+- `GET /api/contacts/:id` - Get single contact (admin)
+- `POST /api/contacts` - Submit contact form (public)
+- `PUT /api/contacts/:id/status` - Update contact status (admin)
+- `DELETE /api/contacts/:id` - Delete contact (admin)
 
 ### Admin
 
-- `GET /api/admin/stats` - Get dashboard stats
-- `GET /api/admin/users` - Get all users
-- `PUT /api/admin/users/:id/role` - Update user role
-- `DELETE /api/admin/users/:id` - Delete user
+- `GET /api/admin/stats` - Get dashboard statistics (admin)
+- `GET /api/admin/users` - Get all users (admin)
+- `GET /api/admin/events` - Get all events for admin (admin)
+- `DELETE /api/admin/events/:id` - Delete event (admin)
 
 ### Registrations
 
-- `GET /api/registrations` - Get event registrations (admin)
-- `POST /api/registrations` - Register for event
-- `DELETE /api/registrations/:id` - Cancel registration
+- `POST /api/registrations/events/:eventId/register` - Register for an event (public)
+- `GET /api/registrations/registrations` - Get all registrations (admin)
+- `GET /api/registrations/events/:eventId/registrations` - Get registrations for specific event (admin)
+- `PUT /api/registrations/registrations/:id/status` - Update registration status (admin)
+- `DELETE /api/registrations/registrations/:id` - Delete registration (admin)
 
 ### Dashboard
 
-- `GET /api/dashboard/stats` - Get public dashboard stats
+- `GET /api/dashboard/stats` - Get dashboard statistics (authenticated)
+
+### Health Check
+
+- `GET /api/health` - Server health check
 
 ## 🔧 Development Scripts
 
@@ -256,43 +290,66 @@ PORT=5000
 - `npm run build` - Build for production
 - `npm run preview` - Preview production build
 
-## 🚀 Deployment
-
-### Vercel Deployment
-
-The project is configured for Vercel deployment with the `vercel.json` file.
-
-1. **Build Commands**
-   - Frontend: `npm run build`
-   - Backend: Uses serverless functions
-
-2. **Environment Variables**
-   Set the following in Vercel dashboard:
-   - `MONGODB_URI`
-   - `JWT_SECRET`
-   - `VITE_API_URL` (for frontend)
-
 ## 🤝 Contributing
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+We welcome contributions from the community! Here's how you can get involved:
+
+1. **Fork the repository**
+2. **Create a feature branch**
+   ```bash
+   git checkout -b feature/your-feature-name
+   ```
+3. **Make your changes** and test thoroughly
+4. **Commit your changes**
+   ```bash
+   git commit -m 'Add: Brief description of your changes'
+   ```
+5. **Push to your branch**
+   ```bash
+   git push origin feature/your-feature-name
+   ```
+6. **Open a Pull Request** with a clear description of your changes
+
+### Development Guidelines
+
+- Follow the existing code style and structure
+- Test your changes locally before submitting
+- Update documentation if needed
+- Ensure all tests pass
 
 ## 📝 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
+## 🏆 Achievements & Recognition
+
+- Successfully organized 8 editions of Chitwan Model United Nations
+- Trained over 500 young leaders across Nepal
+- Established partnerships with 25+ national and international organizations
+- Recognized as 'Outstanding Youth Organization' by Nepal Youth Council
+- Featured in major Nepali media outlets for community impact
+
 ## 👥 Team
 
-- **Youth Technology Society Chitwan** - Organization
-- Project maintained by YTS Chitwan members
+**Youth Thinkers' Society Chitwan** - A dedicated team of young leaders committed to empowering Nepal's future through education, innovation, and community service.
 
-## 📞 Contact
+### Connect With Us
 
-For questions or support, please contact us through the contact form on the website or reach out to the YTS Chitwan team.
+- **Website**: [yts-chitwan.vercel.app](https://yts-chitwan.vercel.app) (if deployed)
+- **Email**: Contact through our website contact form
+- **Location**: Chitwan, Nepal
+
+## 🙏 Acknowledgments
+
+Special thanks to:
+
+- All our volunteers and team members
+- Partner organizations supporting youth development
+- The community of young leaders participating in our programs
+- Open source contributors and the developer community
 
 ---
 
-Built with ❤️ by the Youth Technology Society Chitwan
+**Built with ❤️ by the Youth Thinkers' Society Chitwan**
+
+_Empowering Nepal's youth, one leader at a time._
