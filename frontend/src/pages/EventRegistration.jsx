@@ -85,8 +85,18 @@ export default function EventRegistration() {
     } catch (err) {
       console.error("Registration error:", err);
 
-      // Show real backend message
-      setError(err.message || "Registration failed. Please try again.");
+      let errorMessage = "Registration failed. Please try again.";
+
+      try {
+        // If backend returned JSON string
+        const parsed = JSON.parse(err.message);
+        errorMessage = parsed.message || errorMessage;
+      } catch {
+        // If it's already clean text
+        errorMessage = err.message || errorMessage;
+      }
+
+      setError(errorMessage);
     } finally {
       setSubmitting(false);
     }
