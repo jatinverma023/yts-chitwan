@@ -56,17 +56,18 @@ class ApiService {
   }
 
   async registerForEvent(eventId, registrationData) {
-    const res = await fetch(
-      `${API_BASE_URL}/registrations/events/${eventId}/register`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(registrationData),
-      }
-    );
+  const res = await fetch(
+    `${API_BASE_URL}/events/${eventId}/register`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(registrationData),
+    }
+  );
 
-    return checkRes(res);
-  }
+  return checkRes(res);
+}
+
 
   // ======================
   // ADMIN METHODS
@@ -196,6 +197,7 @@ class ApiService {
 
     return checkRes(res);
   }
+  
 }
 
 export default new ApiService();
