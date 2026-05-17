@@ -35,7 +35,7 @@ export default function AdminRegistrations() {
       ]);
 
       setRegistrations(regsResponse.registrations || []);
-      setEvents(eventsResponse.events || eventsResponse || []);
+      setEvents(eventsResponse.events || []);
       setError("");
     } catch (err) {
       setError("Failed to load registrations");

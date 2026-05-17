@@ -9,7 +9,7 @@ export default function AdminUsers() {
     (async () => {
       try {
         const res = await ApiService.getAdminUsers();
-        setUsers(res.users || res);
+        setUsers(res.users || []);
       } catch (err) {
         console.error(err);
       } finally {

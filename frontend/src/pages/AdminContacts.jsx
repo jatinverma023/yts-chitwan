@@ -13,28 +13,7 @@ export default function AdminContacts() {
       setError("");
       try {
         const res = await ApiService.getAdminContacts();
-        // DEBUG: log the raw response so we can see its shape
-        console.log("getAdminContacts response:", res);
-
-        // Accept any of these shapes:
-        // 1) array -> [ {...}, ... ]
-        // 2) { contacts: [...] }
-        // 3) { data: [...] } (defensive)
-        // 4) fallback -> []
-        let list = [];
-        if (Array.isArray(res)) {
-          list = res;
-        } else if (res && Array.isArray(res.contacts)) {
-          list = res.contacts;
-        } else if (res && Array.isArray(res.data)) {
-          list = res.data;
-        } else {
-          // if the backend returned `{ message: '...' }`, capture that
-          console.warn("Unexpected contacts response shape:", res);
-          list = [];
-        }
-
-        setContacts(list);
+        setContacts(res.contacts || []);
       } catch (err) {
         console.error("Failed to load contacts:", err);
         setError(err.message || "Failed to load contacts");

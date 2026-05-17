@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import ApiService from "../services/api";
 
 export default function AdminLogin() {
   const [email, setEmail] = useState("");
@@ -13,16 +14,7 @@ export default function AdminLogin() {
     setErr("");
     setLoading(true);
     try {
-      const res = await fetch(
-        `${import.meta.env.VITE_API_URL || "http://localhost:5000/api"}/auth/login`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, password }),
-        }
-      );
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Login failed");
+      const data = await ApiService.login(email, password);
 
       // require admin role
       if (data.user?.role !== "admin") {
@@ -39,6 +31,7 @@ export default function AdminLogin() {
       navigate("/admin");
     } catch (e) {
       setErr(e.message || "Login failed");
+    } finally {
       setLoading(false);
     }
   };

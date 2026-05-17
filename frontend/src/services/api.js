@@ -42,31 +42,40 @@ class ApiService {
     return checkRes(res);
   }
 
+  async getTeamMembers() {
+    const res = await fetch(`${API_BASE_URL}/team`);
+    return checkRes(res);
+  }
+
   async submitContact(contactData) {
     const res = await fetch(`${API_BASE_URL}/contacts`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        ...authHeaders(),
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(contactData),
     });
-
     return checkRes(res);
   }
 
   async registerForEvent(eventId, registrationData) {
-  const res = await fetch(
-    `${API_BASE_URL}/events/${eventId}/register`,
-    {
+    const res = await fetch(
+      `${API_BASE_URL}/events/${eventId}/register`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(registrationData),
+      }
+    );
+    return checkRes(res);
+  }
+
+  async login(email, password) {
+    const res = await fetch(`${API_BASE_URL}/auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(registrationData),
-    }
-  );
-
-  return checkRes(res);
-}
+      body: JSON.stringify({ email, password }),
+    });
+    return checkRes(res);
+  }
 
 
   // ======================
@@ -105,10 +114,9 @@ class ApiService {
   }
 
   async getAdminEvents() {
-    const res = await fetch(`${API_BASE_URL}/events`, {
+    const res = await fetch(`${API_BASE_URL}/admin/events`, {
       headers: authHeaders(),
     });
-
     return checkRes(res);
   }
 
@@ -177,16 +185,9 @@ class ApiService {
   }
 
   async getAdminUsers() {
-    let res = await fetch(`${API_BASE_URL}/admin/users`, {
+    const res = await fetch(`${API_BASE_URL}/admin/users`, {
       headers: authHeaders(),
     });
-
-    if (res.status === 404) {
-      res = await fetch(`${API_BASE_URL}/auth/users`, {
-        headers: authHeaders(),
-      });
-    }
-
     return checkRes(res);
   }
 

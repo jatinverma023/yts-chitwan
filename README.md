@@ -111,15 +111,11 @@ yts-chitwan/
 │   │   ├── components/
 │   │   │   ├── AdminLayout.jsx
 │   │   │   ├── AdminProtection.jsx
-│   │   │   ├── Dashboard.jsx
-│   │   │   ├── EventsManager.jsx
 │   │   │   ├── Footer.jsx
 │   │   │   ├── Navbar.jsx
 │   │   │   └── Reveal.jsx
 │   │   ├── hooks/
 │   │   │   └── useDarkMode.js
-│   │   ├── layouts/
-│   │   │   └── AdminLayout.jsx
 │   │   ├── pages/
 │   │   │   ├── About.jsx
 │   │   │   ├── AdminContacts.jsx
@@ -129,7 +125,6 @@ yts-chitwan/
 │   │   │   ├── AdminRegistrations.jsx
 │   │   │   ├── AdminUsers.jsx
 │   │   │   ├── Contact.jsx
-│   │   │   ├── Dashboard.jsx
 │   │   │   ├── EventRegistration.jsx
 │   │   │   ├── EventRegistrationsDetail.jsx
 │   │   │   ├── Events.jsx

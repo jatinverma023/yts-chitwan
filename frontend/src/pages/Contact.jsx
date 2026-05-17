@@ -113,11 +113,8 @@ export default function Contact() {
       }, 5000);
     } catch (err) {
       console.error("Contact form error:", err);
-      // axios error shape or generic Error
-      const message =
-        err?.response?.data?.message ||
-        err?.message ||
-        "Network error. Please try again.";
+      // Extract error message
+      const message = err?.message || "Network error. Please try again.";
       setSubmitError(message);
     } finally {
       setIsLoading(false);

@@ -38,7 +38,7 @@ export default function EventRegistrationsDetail() {
 
       // Fetch event details
       const eventsResponse = await ApiService.getEvents();
-      const events = eventsResponse.events || eventsResponse || [];
+      const events = eventsResponse.events || [];
       const foundEvent = events.find((e) => (e._id || e.id) === eventId);
 
       if (foundEvent) {

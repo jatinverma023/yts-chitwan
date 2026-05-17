@@ -86,6 +86,7 @@ app.use('/api/auth', require('./routes/auth'));
 app.use('/api/events', require('./routes/events'));
 app.use('/api/contacts', require('./routes/contact'));
 app.use('/api/admin', require('./routes/admin'));
+app.use('/api/team', require('./routes/team'));
 app.use('/api', registrationRoutes);
 app.use('/api', require('./routes/dashboard'));
 
@@ -105,11 +106,12 @@ app.use((req, res) => {
 ------------------------------------------------------------ */
 
 app.use((err, req, res, next) => {
-  console.error("❌ Server Error:", err.stack);
+  console.error("Server Error:", err.stack);
 
+  const isDev = process.env.NODE_ENV === "development";
   res.status(500).json({
     success: false,
-    message: err.message || "Internal server error",
+    message: isDev ? err.message : "Internal server error",
   });
 });
 

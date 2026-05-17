@@ -1,7 +1,8 @@
 import Reveal from "../components/Reveal";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import ApiService from "../services/api";
 import {
   Users,
   Award,
@@ -23,68 +24,37 @@ import {
 export default function Team() {
   const [hoveredMember, setHoveredMember] = useState(null);
 
-  const team = [
-    {
-      name: "Aarav Sharma",
-      role: "President",
-      img: "/team/aarav-sharma.jpg",
-      bio: "Visionary leader with 5+ years in youth development. Passionate about creating opportunities for young changemakers across Nepal.",
-      email: "aarav@ytschitwan.org",
-      linkedin: "#",
-      twitter: "#",
-      achievements: [
-        "Led 15+ major events",
-        "CMUN Founder",
-        "Youth Ambassador",
-      ],
-      joinedYear: "2019",
-    },
-    {
-      name: "Sneha Koirala",
-      role: "Vice President",
-      img: "/team/sneha-koirala.jpg",
-      bio: "Strategic planner and community builder. Dedicated to empowering female youth leadership and inclusive growth initiatives.",
-      email: "sneha@ytschitwan.org",
-      linkedin: "#",
-      twitter: "#",
-      achievements: [
-        "Women's Leadership Advocate",
-        "50+ Workshops Organized",
-        "Community Impact Award",
-      ],
-      joinedYear: "2020",
-    },
-    {
-      name: "Rohan Gurung",
-      role: "Event Coordinator",
-      img: "/team/rohan-gurung.jpg",
-      bio: "Master event organizer with exceptional attention to detail. Transforms ideas into impactful experiences that inspire action.",
-      email: "rohan@ytschitwan.org",
-      linkedin: "#",
-      twitter: "#",
-      achievements: [
-        "Event Excellence Award",
-        "Innovation Hackathon Creator",
-        "500+ Participants Managed",
-      ],
-      joinedYear: "2021",
-    },
-    {
-      name: "Priya Adhikari",
-      role: "PR Manager",
-      img: "/team/priya-adhikari.jpg",
-      bio: "Creative storyteller and brand strategist. Amplifies YTS Chitwan's mission through compelling narratives and digital engagement.",
-      email: "priya@ytschitwan.org",
-      linkedin: "#",
-      twitter: "#",
-      achievements: [
-        "Digital Strategy Expert",
-        "Media Partnership Builder",
-        "Brand Recognition Leader",
-      ],
-      joinedYear: "2022",
-    },
-  ];
+  const [team, setTeam] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchTeam = async () => {
+      try {
+        const res = await ApiService.getTeamMembers();
+        if (res.success && res.members) {
+          // Map DB model to component structure
+          const mappedTeam = res.members.map(m => ({
+            id: m._id,
+            name: m.name,
+            role: m.position,
+            img: m.image,
+            bio: m.bio,
+            email: m.email,
+            linkedin: m.social?.linkedin || "#",
+            twitter: m.social?.twitter || "#",
+            achievements: ["Dedicated Member", "Youth Advocate", "Change Maker"], // Fallbacks
+            joinedYear: new Date(m.createdAt || Date.now()).getFullYear().toString()
+          }));
+          setTeam(mappedTeam);
+        }
+      } catch (err) {
+        console.error("Failed to load team members:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchTeam();
+  }, []);
 
   const teamStats = [
     { number: "4", label: "Core Leaders", icon: Users },
