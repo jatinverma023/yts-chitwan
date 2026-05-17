@@ -1,16 +1,20 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-/* Global styles */
+/* Global styles - Tailwind directives are in index.css */
 body {
-  @apply bg-gray-50 text-gray-900 antialiased;
+  background-color: #f9fafb;
+  color: #111827;
+  -webkit-font-smoothing: antialiased;
 }
 
 h1, h2, h3, h4 {
-  @apply font-bold text-gray-800;
+  font-weight: 700;
+  color: #1f2937;
 }
 
 a {
-  @apply text-blue-600 hover:text-blue-800 transition;
+  color: #2563eb;
+  transition: color 0.2s;
+}
+
+a:hover {
+  color: #1e40af;
 }

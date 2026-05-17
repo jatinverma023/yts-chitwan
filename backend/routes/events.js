@@ -1,64 +1,65 @@
 const express = require('express');
 const Event = require('../models/Event');
+const { auth, requireAdmin } = require('../middleware/auth');
 const router = express.Router();
 
-// Get all events
+// Get all events (PUBLIC)
 router.get('/', async (req, res) => {
   try {
     const events = await Event.find({ isActive: true }).sort({ date: -1 });
-    res.json(events);
+    res.json({ success: true, events });
   } catch (error) {
-    res.status(500).json({ message: 'Server error', error: error.message });
+    res.status(500).json({ success: false, message: 'Server error', error: error.message });
   }
 });
 
-// Get single event
+// Get single event (PUBLIC)
 router.get('/:id', async (req, res) => {
   try {
     const event = await Event.findById(req.params.id);
     if (!event) {
-      return res.status(404).json({ message: 'Event not found' });
+      return res.status(404).json({ success: false, message: 'Event not found' });
     }
-    res.json(event);
+    res.json({ success: true, event });
   } catch (error) {
-    res.status(500).json({ message: 'Server error', error: error.message });
+    res.status(500).json({ success: false, message: 'Server error', error: error.message });
   }
 });
 
-// Create event (admin only - will add auth middleware later)
-router.post('/', async (req, res) => {
+// Create event (ADMIN ONLY)
+router.post('/', auth, requireAdmin, async (req, res) => {
   try {
     const event = new Event(req.body);
     await event.save();
-    res.status(201).json(event);
+    res.status(201).json({ success: true, event });
   } catch (error) {
-    res.status(400).json({ message: 'Server error', error: error.message });
+    res.status(400).json({ success: false, message: 'Server error', error: error.message });
   }
 });
 
-// Update event
-router.put('/:id', async (req, res) => {
+// Update event (ADMIN ONLY)
+router.put('/:id', auth, requireAdmin, async (req, res) => {
   try {
     const event = await Event.findByIdAndUpdate(req.params.id, req.body, { new: true });
     if (!event) {
-      return res.status(404).json({ message: 'Event not found' });
+      return res.status(404).json({ success: false, message: 'Event not found' });
     }
-    res.json(event);
+    res.json({ success: true, event });
   } catch (error) {
-    res.status(500).json({ message: 'Server error', error: error.message });
+    res.status(500).json({ success: false, message: 'Server error', error: error.message });
   }
 });
 
-// Delete event
-router.delete('/:id', async (req, res) => {
+// Delete event (ADMIN ONLY)
+router.delete('/:id', auth, requireAdmin, async (req, res) => {
   try {
     const event = await Event.findByIdAndDelete(req.params.id);
     if (!event) {
-      return res.status(404).json({ message: 'Event not found' });
+      return res.status(404).json({ success: false, message: 'Event not found' });
     }
-    res.json({ message: 'Event deleted successfully' });
+    res.json({ success: true, message: 'Event deleted successfully' });
   } catch (error) {
-    res.status(500).json({ message: 'Server error', error: error.message });
+    res.status(500).json({ success: false, message: 'Server error', error: error.message });
   }
 });
 

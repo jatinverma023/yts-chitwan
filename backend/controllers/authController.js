@@ -5,7 +5,7 @@ const User = require("../models/User");
 const signToken = (user) => {
   return jwt.sign(
     { userId: user._id, role: user.role },
-    process.env.JWT_SECRET || "your_jwt_secret",
+    process.env.JWT_SECRET,
     { expiresIn: "30d" }
   );
 };

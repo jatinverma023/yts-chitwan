@@ -40,8 +40,9 @@ export default function EventRegistration() {
     try {
       setLoading(true);
       const response = await ApiService.getEvents();
-      const events = response.events || response.data || response;
-      const foundEvent = events.find((e) => (e._id || e.id) === id);
+      const events = response.events || response.data || response || [];
+      const eventsList = Array.isArray(events) ? events : [];
+      const foundEvent = eventsList.find((e) => (e._id || e.id) === id);
 
       if (foundEvent) {
         setEvent(foundEvent);

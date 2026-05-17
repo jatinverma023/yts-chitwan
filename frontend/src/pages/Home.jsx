@@ -1,7 +1,8 @@
 import Reveal from "../components/Reveal";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import ApiService from "../services/api";
 import {
   ArrowRight,
   Users,
@@ -69,26 +70,23 @@ export default function Home() {
     },
   ];
 
-  const upcomingEvents = [
-    {
-      title: "Innovation Hackathon",
-      date: "September 2025",
-      status: "Registration Open",
-      image: "/events/hackathon-preview.jpg",
-    },
-    {
-      title: "Youth Leadership Workshop",
-      date: "October 2025",
-      status: "Coming Soon",
-      image: "/events/workshop-preview.jpg",
-    },
-    {
-      title: "Chitwan Model United Nations",
-      date: "November 2025",
-      status: "Flagship Event",
-      image: "/events/cmun-preview.jpg",
-    },
-  ];
+  const [upcomingEvents, setUpcomingEvents] = useState([]);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await ApiService.getEvents();
+        const events = res.events || (Array.isArray(res) ? res : []);
+        // Show the 3 most recent/upcoming events
+        const sorted = events
+          .sort((a, b) => new Date(a.date) - new Date(b.date))
+          .slice(0, 3);
+        setUpcomingEvents(sorted);
+      } catch (err) {
+        console.error("Failed to load events for homepage:", err);
+      }
+    })();
+  }, []);
 
   const InteractiveStats = ({ stats }) => {
     return (
@@ -464,33 +462,38 @@ export default function Home() {
                 >
                   {/* Event Image */}
                   <div className="relative h-56 overflow-hidden">
-                    <motion.img
-                      src={event.image || "/events/default-event.jpg"}
-                      alt={event.title}
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                    />
+                    <div className="w-full h-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                      <Calendar size={48} className="text-white opacity-50" />
+                    </div>
                     <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
                     <div className="absolute top-4 right-4">
                       <span className="bg-green-500 text-white px-4 py-2 rounded-full text-sm font-semibold">
-                        {event.status}
+                        {event.category || "Event"}
                       </span>
                     </div>
                   </div>
 
-                  <div className="p-8">
-                    <h3 className="text-2xl font-bold mb-3 group-hover:text-blue-300 transition-colors">
-                      {event.title}
-                    </h3>
-                    <p className="text-gray-300 mb-6 text-lg">{event.date}</p>
+                    <div className="p-8">
+                      <h3 className="text-2xl font-bold mb-3 group-hover:text-blue-300 transition-colors">
+                        {event.title}
+                      </h3>
+                      <p className="text-gray-300 mb-6 text-lg">
+                        {event.date
+                          ? new Date(event.date).toLocaleDateString("en-US", {
+                              month: "long",
+                              year: "numeric",
+                            })
+                          : "Coming Soon"}
+                      </p>
 
-                    <Link
-                      to="/contact"
-                      className="inline-flex items-center text-blue-300 hover:text-blue-100 font-semibold text-lg transition-colors"
-                    >
-                      Register Now
-                      <ArrowRight size={18} className="ml-2" />
-                    </Link>
-                  </div>
+                      <Link
+                        to={`/events/register/${event._id || event.id}`}
+                        className="inline-flex items-center text-blue-300 hover:text-blue-100 font-semibold text-lg transition-colors"
+                      >
+                        Register Now
+                        <ArrowRight size={18} className="ml-2" />
+                      </Link>
+                    </div>
                 </motion.div>
               ))}
             </div>
@@ -523,19 +526,15 @@ export default function Home() {
                   transition={{ delay: index * 0.3 }}
                 >
                   <div className="flex items-start space-x-6">
-                    {/* Profile Image */}
                     <motion.div
                       className="relative"
                       whileHover={{ scale: 1.1, rotate: 5 }}
                     >
-                      <img
-                        src={
-                          testimonial.image ||
-                          "/testimonials/default-avatar.jpg"
-                        }
-                        alt={testimonial.name}
-                        className="w-20 h-20 rounded-full object-cover border-4 border-blue-200 dark:border-blue-800"
-                      />
+                      <div className="w-20 h-20 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center border-4 border-blue-200 dark:border-blue-800">
+                        <span className="text-white text-2xl font-bold">
+                          {testimonial.name.charAt(0)}
+                        </span>
+                      </div>
                     </motion.div>
 
                     <div className="flex-1">
@@ -616,7 +615,7 @@ export default function Home() {
                   whileTap={{ scale: 0.95 }}
                 >
                   <Link
-                    to="/donate"
+                    to="/contact"
                     className="inline-flex items-center border-2 border-white text-white hover:bg-white hover:text-blue-600 px-10 py-5 rounded-full font-semibold text-xl transition-all duration-300"
                   >
                     <Heart className="mr-3" size={24} />

@@ -1,10 +1,10 @@
 const express = require('express');
 const Contact = require('../models/Contact');
-const { auth } = require('../middleware/auth'); // Import auth middleware
+const { auth, requireAdmin } = require('../middleware/auth');
 const router = express.Router();
 
 // Get all contacts (ADMIN ONLY - PROTECTED)
-router.get('/', auth, async (req, res) => {
+router.get('/', auth, requireAdmin, async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 50;
@@ -40,7 +40,7 @@ router.get('/', auth, async (req, res) => {
 });
 
 // Get single contact (ADMIN ONLY)
-router.get('/:id', auth, async (req, res) => {
+router.get('/:id', auth, requireAdmin, async (req, res) => {
   try {
     const contact = await Contact.findById(req.params.id);
     if (!contact) {
@@ -119,9 +119,13 @@ router.post('/', async (req, res) => {
 });
 
 // Update contact status (ADMIN ONLY)
-router.put('/:id/status', auth, async (req, res) => {
+router.put('/:id/status', auth, requireAdmin, async (req, res) => {
   try {
     const { status } = req.body;
+    const validStatuses = ['pending', 'read', 'replied', 'archived'];
+    if (!validStatuses.includes(status)) {
+      return res.status(400).json({ success: false, message: 'Invalid status. Must be one of: ' + validStatuses.join(', ') });
+    }
     const contact = await Contact.findByIdAndUpdate(
       req.params.id,
       { status },
@@ -137,7 +141,7 @@ router.put('/:id/status', auth, async (req, res) => {
 });
 
 // Delete contact (ADMIN ONLY)
-router.delete('/:id', auth, async (req, res) => {
+router.delete('/:id', auth, requireAdmin, async (req, res) => {
   try {
     const contact = await Contact.findByIdAndDelete(req.params.id);
     if (!contact) {

@@ -90,6 +90,17 @@ app.use('/api', registrationRoutes);
 app.use('/api', require('./routes/dashboard'));
 
 /* -----------------------------------------------------------
+   404
+------------------------------------------------------------ */
+
+app.use((req, res) => {
+  res.status(404).json({
+    success: false,
+    message: "API endpoint not found",
+  });
+});
+
+/* -----------------------------------------------------------
    Error Handler
 ------------------------------------------------------------ */
 
@@ -99,17 +110,6 @@ app.use((err, req, res, next) => {
   res.status(500).json({
     success: false,
     message: err.message || "Internal server error",
-  });
-});
-
-/* -----------------------------------------------------------
-   404
------------------------------------------------------------- */
-
-app.use((req, res) => {
-  res.status(404).json({
-    success: false,
-    message: "API endpoint not found",
   });
 });
 

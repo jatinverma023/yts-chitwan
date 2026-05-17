@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 
@@ -21,6 +21,55 @@ import AdminLayout from "./components/AdminLayout.jsx";
 import AdminProtection from "./components/AdminProtection.jsx";
 import AdminRegistrations from "./pages/AdminRegistrations.jsx";
 import EventRegistrationsDetail from "./pages/EventRegistrationsDetail.jsx";
+
+// Simple placeholder page for routes under construction
+function ComingSoon({ title }) {
+  return (
+    <div className="min-h-screen bg-white">
+      <Navbar />
+      <div className="flex items-center justify-center py-32">
+        <div className="text-center max-w-md mx-auto px-4">
+          <h1 className="text-3xl font-bold text-gray-900 mb-4">{title}</h1>
+          <p className="text-gray-600 mb-8">This page is coming soon.</p>
+          <Link
+            to="/"
+            className="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            ← Back to Home
+          </Link>
+        </div>
+      </div>
+      <Footer />
+    </div>
+  );
+}
+
+// 404 Not Found page
+function NotFound() {
+  return (
+    <div className="min-h-screen bg-white">
+      <Navbar />
+      <div className="flex items-center justify-center py-32">
+        <div className="text-center max-w-md mx-auto px-4">
+          <h1 className="text-6xl font-bold text-gray-300 mb-4">404</h1>
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">
+            Page Not Found
+          </h2>
+          <p className="text-gray-600 mb-8">
+            The page you're looking for doesn't exist or has been moved.
+          </p>
+          <Link
+            to="/"
+            className="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            ← Back to Home
+          </Link>
+        </div>
+      </div>
+      <Footer />
+    </div>
+  );
+}
 
 function App() {
   return (
@@ -88,6 +137,11 @@ function App() {
           }
         />
 
+        {/* Placeholder Routes */}
+        <Route path="/donate" element={<ComingSoon title="Support Our Mission" />} />
+        <Route path="/privacy" element={<ComingSoon title="Privacy Policy" />} />
+        <Route path="/terms" element={<ComingSoon title="Terms of Service" />} />
+
         {/* Admin Routes */}
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route
@@ -110,6 +164,9 @@ function App() {
           <Route path="contacts" element={<AdminContacts />} />
           <Route path="users" element={<AdminUsers />} />
         </Route>
+
+        {/* 404 Catch-all */}
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>
   );

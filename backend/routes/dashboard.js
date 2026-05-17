@@ -5,10 +5,10 @@ const User = require('../models/User');
 const Event = require('../models/Event');
 const Contact = require('../models/Contact');
 const Registration = require('../models/Registration');
-const { auth } = require('../middleware/auth');
+const { auth, requireAdmin } = require('../middleware/auth');
 
 // Get dashboard statistics (ADMIN ONLY)
-router.get('/dashboard/stats', auth, async (req, res) => {
+router.get('/dashboard/stats', auth, requireAdmin, async (req, res) => {
   try {
     // Run all counts in parallel for better performance
     const [usersCount, eventsCount, contactsCount, registrationsCount] = 

@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Registration = require('../models/Registration');
 const Event = require('../models/Event');
-const { auth, requireAdmin } = require('../middleware/auth'); // CORRECT IMPORT
+const { auth, requireAdmin } = require('../middleware/auth');
 
 // Public route: Register for an event
 router.post('/events/:eventId/register', async (req, res) => {
@@ -39,6 +39,9 @@ router.post('/events/:eventId/register', async (req, res) => {
 
     await registration.save();
 
+    // Increment the registeredCount on the event
+    await Event.findByIdAndUpdate(eventId, { $inc: { registeredCount: 1 } });
+
     res.status(201).json({
       success: true,
       message: 'Registration successful',
@@ -54,7 +57,7 @@ router.post('/events/:eventId/register', async (req, res) => {
 });
 
 // Admin route: Get all registrations (requires authentication)
-router.get('/registrations', auth, async (req, res) => {
+router.get('/registrations', auth, requireAdmin, async (req, res) => {
   try {
     const registrations = await Registration.find()
       .populate('eventId', 'title category date location')
@@ -74,7 +77,7 @@ router.get('/registrations', auth, async (req, res) => {
 });
 
 // Admin route: Get registrations for a specific event
-router.get('/events/:eventId/registrations', auth, async (req, res) => {
+router.get('/events/:eventId/registrations', auth, requireAdmin, async (req, res) => {
   try {
     const { eventId } = req.params;
 
@@ -95,7 +98,7 @@ router.get('/events/:eventId/registrations', auth, async (req, res) => {
 });
 
 // Admin route: Delete a registration
-router.delete('/registrations/:id', auth, async (req, res) => {
+router.delete('/registrations/:id', auth, requireAdmin, async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -119,7 +122,7 @@ router.delete('/registrations/:id', auth, async (req, res) => {
 });
 
 // Admin route: Update registration status
-router.put('/registrations/:id/status', auth, async (req, res) => {
+router.put('/registrations/:id/status', auth, requireAdmin, async (req, res) => {
   try {
     const { id } = req.params;
     const { status } = req.body;

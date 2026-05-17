@@ -1,9 +1,10 @@
-import { Outlet, Link, useNavigate } from "react-router-dom";
+import { Outlet, Link, useNavigate, useLocation } from "react-router-dom";
 import { useState } from "react";
+import { Shield } from "lucide-react";
 
 export default function AdminLayout() {
   const navigate = useNavigate();
-  const [mobileOpen, setMobileOpen] = useState(false);
+  const location = useLocation();
 
   const logout = () => {
     localStorage.removeItem("token");
@@ -20,45 +21,58 @@ export default function AdminLayout() {
     }
   })();
 
+  const navLink = (path, label) => (
+    <Link
+      to={path}
+      className={`px-4 py-2 rounded-lg text-sm font-medium transition-all
+        ${
+          location.pathname === path
+            ? "bg-blue-600 text-white shadow-sm"
+            : "text-gray-600 hover:bg-gray-100"
+        }`}
+    >
+      {label}
+    </Link>
+  );
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white border-b">
-        <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
+    <div className="min-h-screen bg-gray-100">
+      {/* Header */}
+      <header className="bg-white shadow-sm border-b">
+        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+          {/* Left */}
           <div className="flex items-center gap-4">
-            <h2 className="text-xl font-bold">Admin Panel</h2>
-            <div className="text-sm text-gray-600 hidden md:block">
-              Welcome, {user.name || "Admin"}
+            <div className="flex items-center gap-2">
+              <Shield className="w-5 h-5 text-blue-600" />
+              <h2 className="text-xl font-semibold text-gray-800">
+                Admin Panel
+              </h2>
+            </div>
+
+            <div className="hidden md:flex items-center gap-2 text-sm text-gray-500">
+              <span>Welcome,</span>
+              <span className="font-medium text-gray-700">
+                {user.name || "Admin"}
+              </span>
+              {user.role && (
+                <span className="ml-2 px-2 py-1 text-xs rounded-full bg-purple-100 text-purple-600">
+                  {user.role}
+                </span>
+              )}
             </div>
           </div>
 
-          <nav className="flex items-center gap-3">
-            <Link
-              to="/admin"
-              className="px-3 py-1 rounded-md text-sm border bg-white"
-            >
-              Dashboard
-            </Link>
-            <Link
-              to="/admin/events"
-              className="px-3 py-1 rounded-md text-sm border bg-white"
-            >
-              Events
-            </Link>
-            <Link
-              to="/admin/contacts"
-              className="px-3 py-1 rounded-md text-sm border bg-white"
-            >
-              Contacts
-            </Link>
-            <Link
-              to="/admin/users"
-              className="px-3 py-1 rounded-md text-sm border bg-white"
-            >
-              Users
-            </Link>
+          {/* Right Nav */}
+          <nav className="hidden md:flex items-center gap-2">
+            {navLink("/admin", "Dashboard")}
+            {navLink("/admin/events", "Events")}
+            {navLink("/admin/registrations", "Registrations")}
+            {navLink("/admin/contacts", "Contacts")}
+            {navLink("/admin/users", "Users")}
+
             <button
               onClick={logout}
-              className="px-3 py-1 rounded-md bg-red-500 text-white text-sm"
+              className="ml-3 px-4 py-2 rounded-lg bg-red-500 text-white text-sm hover:bg-red-600 transition"
             >
               Logout
             </button>
@@ -66,10 +80,10 @@ export default function AdminLayout() {
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto p-6">
+      {/* Page Content */}
+      <main className="max-w-7xl mx-auto px-6 py-8">
         <Outlet />
       </main>
     </div>
   );
-
 }

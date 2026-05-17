@@ -11,7 +11,7 @@ export default function AdminEvents() {
     (async () => {
       try {
         const ev = await ApiService.getAdminEvents();
-        setEvents(ev.events || ev);
+        setEvents(ev.events || (Array.isArray(ev) ? ev : []));
       } catch (err) {
         console.error(err);
       } finally {

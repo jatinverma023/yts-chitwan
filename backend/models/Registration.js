@@ -39,7 +39,7 @@ const registrationSchema = new mongoose.Schema({
   timestamps: true
 });
 
-// Index for faster queries and prevent duplicate registrations
-registrationSchema.index({ eventId: 1, email: 1 });
+// Unique index to prevent duplicate registrations
+registrationSchema.index({ eventId: 1, email: 1 }, { unique: true });
 
 module.exports = mongoose.model('Registration', registrationSchema);

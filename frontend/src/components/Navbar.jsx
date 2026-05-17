@@ -2,25 +2,16 @@ import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Moon, Sun, Menu, X } from "lucide-react";
+import useDarkMode from "../hooks/useDarkMode";
 import ytsLogo from "../assets/yts-logo.png";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
-  const [darkMode, setDarkMode] = useState(
-    document.documentElement.classList.contains("dark")
-  );
+  const [darkMode, setDarkMode] = useDarkMode();
   const location = useLocation();
 
   const toggleMenu = () => setIsOpen(!isOpen);
-
-  const toggleDarkMode = () => {
-    setDarkMode(!darkMode);
-    if (!darkMode) {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-  };
+  const toggleDarkMode = () => setDarkMode(!darkMode);
 
   // REMOVED ADMIN LINK - Only public pages
   const links = [

@@ -38,7 +38,7 @@ export default function AdminDashboard() {
 
       // Fetch recent events
       const eventsResponse = await ApiService.getAdminEvents();
-      const events = eventsResponse.events || eventsResponse || [];
+      const events = eventsResponse.events || (Array.isArray(eventsResponse) ? eventsResponse : []);
 
       // Get the 5 most recent events
       const sortedEvents = events

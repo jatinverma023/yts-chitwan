@@ -22,11 +22,9 @@ export default function AdminEventForm() {
     (async () => {
       try {
         setLoading(true);
-        const res = (await ApiService.getAdminEventById)
-          ? await ApiService.getAdminEventById(id)
-          : await ApiService.getAdminEvents();
-        if (res.event) {
-          const e = res.event;
+        const res = await ApiService.getAdminEventById(id);
+        const e = res.event || res;
+        if (e && e.title) {
           setForm({
             title: e.title || "",
             description: e.description || "",
@@ -35,17 +33,7 @@ export default function AdminEventForm() {
             category: e.category || "",
           });
         } else {
-          // fallback: find in events array
-          const evs = res.events || res;
-          const e = evs.find((x) => x._id === id);
-          if (!e) throw new Error("Event not found");
-          setForm({
-            title: e.title || "",
-            description: e.description || "",
-            date: e.date ? e.date.slice(0, 16) : "",
-            location: e.location || "",
-            category: e.category || "",
-          });
+          throw new Error("Event not found");
         }
       } catch (error) {
         setErr(error.message || "Failed to load event");
